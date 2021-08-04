@@ -280,7 +280,7 @@ contract BEP20 is Ownable, IBEP20 {
         _balances[_shareAddress] += amount / 100;
         _balances[_defiAddress] += amount / 100;
 
-        emit Transfer(sender, recipient, amount);
+        emit Transfer(sender, recipient, amount * 95 / 100);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
