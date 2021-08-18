@@ -17,10 +17,9 @@ contract StandardBEP20 is BEP20 {
         string memory symbol_,
         uint256 initialBalance_,
         address charityAddress_,
-        address shareAddress_,
         address defiAddress_
     )
-        BEP20(name_, symbol_, charityAddress_, shareAddress_, defiAddress_)
+        BEP20(name_, symbol_, charityAddress_, defiAddress_)
         payable
     {
         require(initialBalance_ > 0, "supply cannot be zero");
