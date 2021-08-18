@@ -35,9 +35,11 @@ contract BEP20 is Ownable, IBEP20 {
     string private _name;
     string private _symbol;
     uint8 private _decimals;
+    
     address private _charityAddress;
-    address private _shareAddress;
     address private _defiAddress;
+    
+    // address[] _whitelist;
 
     /**
      * @dev Sets the values for {name} and {symbol}, initializes {decimals} with
@@ -48,12 +50,11 @@ contract BEP20 is Ownable, IBEP20 {
      * All three of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor (string memory name_, string memory symbol_, address charityAddress_, address shareAddress_, address defiAddress_) {
+    constructor (string memory name_, string memory symbol_, address charityAddress_, address defiAddress_) {
         _name = name_;
         _symbol = symbol_;
         _decimals = 18;
         _charityAddress = charityAddress_;
-        _shareAddress = shareAddress_;
         _defiAddress = defiAddress_;
     }
 
@@ -89,22 +90,6 @@ contract BEP20 is Ownable, IBEP20 {
     }
 
     /**
-     * @dev Returns the address of share part.
-     */
-    function shareAddress() public view returns (address) {
-        return _shareAddress;
-    }
-
-    /**
-     * @dev change the address of share part.
-     */
-    function changeShareAddress(address shareAddress_) public virtual returns (bool) {
-        require(_msgSender() == owner(), "BEP20: Only owner can do it.");
-        _shareAddress = shareAddress_;
-        return true;
-    }
-
-    /**
      * @dev Returns the address of defi part.
      */
     function defiAddress() public view returns (address) {
@@ -119,6 +104,15 @@ contract BEP20 is Ownable, IBEP20 {
         _defiAddress = defiAddress_;
         return true;
     }
+
+    // /**
+    //  * @dev change the address of defi part.
+    //  */
+    // function addWhitelist(address _address) public virtual returns (bool) {
+    //     require(_msgSender() == owner(), "BEP20: Only owner can do it.");
+    //     _whitelist.push(_address);
+    //     return true;
+    // }
 
     /**
      * @dev Returns the number of decimals used to get its user representation.
@@ -275,12 +269,11 @@ contract BEP20 is Ownable, IBEP20 {
         uint256 senderBalance = _balances[sender];
         require(senderBalance >= amount, "BEP20: transfer amount exceeds balance");
         _balances[sender] = senderBalance - amount;
-        _balances[recipient] += amount * 95 / 100;
-        _balances[_charityAddress] += amount * 3 / 100;
-        _balances[_shareAddress] += amount / 100;
+        _balances[recipient] += amount * 97 / 100;
+        _balances[_charityAddress] += amount * 2 / 100;
         _balances[_defiAddress] += amount / 100;
 
-        emit Transfer(sender, recipient, amount * 95 / 100);
+        emit Transfer(sender, recipient, amount * 97 / 100);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
