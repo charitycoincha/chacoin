@@ -37,7 +37,8 @@ contract BEP20 is Ownable, IBEP20 {
     uint8 private _decimals;
     
     address private _charityAddress;
-    address private _defiAddress;
+    
+    uint private _transferFee;
     
     // address[] _whitelist;
 
@@ -50,12 +51,12 @@ contract BEP20 is Ownable, IBEP20 {
      * All three of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor (string memory name_, string memory symbol_, address charityAddress_, address defiAddress_) {
+    constructor (string memory name_, string memory symbol_, uint transferFee_, address charityAddress_) {
         _name = name_;
         _symbol = symbol_;
         _decimals = 18;
+        _transferFee = transferFee_;
         _charityAddress = charityAddress_;
-        _defiAddress = defiAddress_;
     }
 
     /**
@@ -90,18 +91,18 @@ contract BEP20 is Ownable, IBEP20 {
     }
 
     /**
-     * @dev Returns the address of defi part.
+     * @dev Returns the fee of transfer.
      */
-    function defiAddress() public view returns (address) {
-        return _defiAddress;
+    function transferFee() public view returns (uint) {
+        return _transferFee;
     }
 
     /**
-     * @dev change the address of defi part.
+     * @dev change the fee of transfer.
      */
-    function changeDefiAddress(address defiAddress_) public virtual returns (bool) {
+    function changeTransferFee(uint transferFee_) public virtual returns (bool) {
         require(_msgSender() == owner(), "BEP20: Only owner can do it.");
-        _defiAddress = defiAddress_;
+        _transferFee = transferFee_;
         return true;
     }
 
@@ -269,11 +270,10 @@ contract BEP20 is Ownable, IBEP20 {
         uint256 senderBalance = _balances[sender];
         require(senderBalance >= amount, "BEP20: transfer amount exceeds balance");
         _balances[sender] = senderBalance - amount;
-        _balances[recipient] += amount * 97 / 100;
-        _balances[_charityAddress] += amount * 2 / 100;
-        _balances[_defiAddress] += amount / 100;
+        _balances[recipient] += amount * (100 - _transferFee) / 100;
+        _balances[_charityAddress] += amount * _transferFee / 100;
 
-        emit Transfer(sender, recipient, amount * 97 / 100);
+        emit Transfer(sender, recipient, amount * (100 - _transferFee) / 100);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
